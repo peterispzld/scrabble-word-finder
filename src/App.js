@@ -1,24 +1,33 @@
 import React from 'react';
-import logo from './logo.svg';
+import 'normalize.css';
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <h1>SCRABBLE</h1>
+      <p>vārdu meklētājs</p>
+      <input type="text" placeholder="raksti savus burtus šeit" />
+      <button>meklēt</button>
+      <table style={{ margin: '2em auto 2em auto' }}>
+        <thead>
+          <th>vārds</th>
+          <th>nozīme</th>
+          <th>vērtība</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>HLOROGĻŪDEŅRAŽI</td>
+            <td>info</td>
+            <td>83</td>
+          </tr>
+          <tr>
+            <td>FILOLOGS</td>
+            <td>info</td>
+            <td>42</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }
