@@ -1,5 +1,3 @@
-import '../scrabbleWordList';
-
 class ScrabbleTreeNode {
     constructor() {
         this.children = Object.create(null);
@@ -13,13 +11,14 @@ class ScrabbleDictionary {
     }
     insert(word) {
         let cursor = this.root;
-        for (let letter of word) {
+        for (let letter of word.letters) {
             if (!cursor.children[letter]) {
                 cursor.children[letter] = new ScrabbleTreeNode();
             }
             cursor = cursor.children[letter];
         }
         cursor.isWord = true;
+        cursor.value = word.value;
     }
 }
 
@@ -32,7 +31,7 @@ class ScrabbleWordFinder {
     }
     validWords = function (node, letters, word = '', results = []) {
         if (node.isWord) {
-            results.push(word);
+            results.push({ letters: word, value: node.value });
         }
         const seen = new Set();
         for (let ch of letters) {
@@ -47,4 +46,4 @@ class ScrabbleWordFinder {
     };
 }
 
-export default new ScrabbleWordFinder(scrabbleWordList);
+export default ScrabbleWordFinder;
