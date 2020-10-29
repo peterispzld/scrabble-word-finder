@@ -1,43 +1,64 @@
-import React, {useState} from 'react';
+import React from 'react';
+import axios from 'axios';
 import 'normalize.css';
-import './App.css';
+import './App.scss';
 
-import scrabbleWordFinder from './utilities/scrabbleWordFinder'
+import ScrabbleWordFinder from './utilities/scrabbleWordFinder'
+import DefinitionPopup from "./definitionPopup";
 
-function App() {
-  const [letterInput, setLetterInput] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  findWords = () => {
-    const results = scrabbleWordFinder.find(letterInput);
-    setSearchResults(results);
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      scrabbleWordFinder: null,
+      searchResults: [],
+      letterInput: '',
+      selectedWord: '',
+      showModal: false
+    }
   }
-  return (
-    <div className="app">
-      <h1>SCRABBLE</h1>
-      <p>vārdu meklētājs</p>
-      <input type="text" placeholder="raksti savus burtus šeit" onChange={e => setLetterInput(e.event.target)} />
-      <button onClick={findWords}>meklēt</button>
-      <table style={{ margin: '2em auto 2em auto' }}>
-        <thead>
-          <th>vārds</th>
-          <th>nozīme</th>
-          <th>vērtība</th>
-        </thead>
-        <tbody>
-          <tr>
-            <td>HLOROGĻŪDEŅRAŽI</td>
-            <td>info</td>
-            <td>83</td>
-          </tr>
-          <tr>
-            <td>FILOLOGS</td>
-            <td>info</td>
-            <td>42</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
+  componentDidMount() {
+    axios('https://raw.githubusercontent.com/peteriscaurs/latvian-scrabble-word-list/main/wordList.json')
+      .then(res => this.setState({ scrabbleWordFinder: new ScrabbleWordFinder(res.data.words) }));
+  }
+  findWords = () => {
+    const results = this.state.scrabbleWordFinder.find(this.state.letterInput);
+    this.setState({ searchResults: results })
+  }
+  showDefinitionModal = word => {
+    this.setState({ selectedWord: word });
+    this.setState({ showModal: true });
+  }
+  closeDefinitionModal = () => {
+    this.setState({ showModal: false });
+  }
+  render() {
+    return (
+      <div className="app">
+        <input type="text" placeholder="raksti savus burtus šeit" onChange={e => this.setState({ letterInput: e.target.value })} />
+        <button onClick={this.findWords}>meklēt</button>
+        <table style={{ margin: '2em auto 2em auto' }}>
+          <thead>
+            <th>vārds</th>
+            <th>nozīme</th>
+            <th>vērtība</th>
+          </thead>
+          <tbody>
+            {this.state.searchResults.length ? this.state.searchResults.map(e => {
+              return (
+                <tr>
+                  <td>{e.letters}</td>
+                  <td onClick={() => this.showDefinitionModal(e.letters)}>info</td>
+                  <td>{e.value}</td>
+                </tr>
+              )
+            }) : null}
+          </tbody>
+        </table>
+        {this.state.showModal === true ? <DefinitionPopup close={this.closeDefinitionModal} word={this.state.selectedWord} /> : null}
+      </div>
+    );
+  }
 }
 
 export default App;
